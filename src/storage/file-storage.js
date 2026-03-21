@@ -12,8 +12,10 @@ export function ensureExpenseFileExists() {
 export function readExpenses() {
     ensureExpenseFileExists();
 
+    let raw = "";
+
     try {
-        const raw = fs.readFileSync(DB_PATH, "utf8").trim();
+        raw = fs.readFileSync(DB_PATH, "utf8").trim();
 
         if (!raw) return [];
 
@@ -21,18 +23,23 @@ export function readExpenses() {
 
         return Array.isArray(data) ? data : [];
     } catch (error) {
-        console.log(
-            "warning: expenses.json is invalid or unreadable. Reseting to empty list.",
-            error instanceof Error ? error.message : error
-        );
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const backupPath = path.resolve(process.cwd(), `expenses.backup.${timestamp}.json`);
 
-        fs.writeFileSync(DB_PATH, JSON.stringify([], null, 2), "utf8");
+        if (raw) {
+            fs.writeFileSync(backupPath, raw, "utf8");
+        }
+
+        console.log("Warning: expenses.json is invalid or unreadable.");
+        console.log(`A backup was created at: ${backupPath}`);
+        console.log("The original file was not silently discarded.");
+        console.log(error instanceof Error ? error.message : error);
 
         return [];
     }
 }
 
-export function writeExpenses(expenses) {
+export function saveExpenses(expenses) {
     ensureExpenseFileExists();
 
     const safeExpenses = Array.isArray(expenses) ? expenses : [];
