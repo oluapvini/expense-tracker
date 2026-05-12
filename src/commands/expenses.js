@@ -1,13 +1,13 @@
 import { readExpenses, saveExpenses } from "../storage/file-storage.js";
 import { help } from "../utils/helps.js";
 
-export function addExpenses(args) {
-    const description = args[0]?.trim();
-    const amountRaw = args[1];
+export function addExpenses(flags) {
+    const description = flags.description?.trim();
+    const amountRaw = flags.amount;
 
     if (!description) {
         console.log('Description is required.');
-        console.log('Usage: add "description" <amount>');
+        console.log('Usage: add --description "Lunch" --amount 20');
         help();
         return;
     }
@@ -16,7 +16,7 @@ export function addExpenses(args) {
 
     if (!amountRaw) {
         console.log('Amount is required.');
-        console.log('Usage: add "description" <amount>');
+        console.log('Usage: add --description "Lunch" --amount 20');
         help();
         return;
     }
@@ -28,8 +28,11 @@ export function addExpenses(args) {
 
     const expenses = readExpenses();
 
+    const maxId = expenses.reduce((max, e) => Math.max(max, e.id || 0), 0);
+    const newId = maxId + 1;
+
     const newExpense = {
-        id: expenses.length + 1,
+        id: newId,
         description,
         amount,
         createdAt: new Date().toISOString()
@@ -41,10 +44,10 @@ export function addExpenses(args) {
     console.log(`Expense added successfully (ID: ${newExpense.id})`);
 }
 
-export function update(args) {
-    const id = parseInt(args[0], 10);
-    const description = args[1].trim();
-    const amount = Number(args[2]);
+export function update(flags) {
+    const id = parseInt(flags.id, 10);
+    const description = flags.description?.trim();
+    const amountRaw = flags.amount;
 
     if (isNaN(id)) {
         console.log('Usage: update <id> "new description" "new amount"');
@@ -52,15 +55,20 @@ export function update(args) {
         return;
     }
 
-    if (!description) {
-        console.log('Description is required.');
-        console.log('Usage: update <id> "new description" <new amount>');
+    if (!description && !amountRaw) {
+        console.log('Nothing to update. Provide --description and/or --amount.');
+        console.log('Usage: update --id <id> [--description "new description"] [--amount <amount>]');
+        help();
         return;
     }
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+    let amount;
+    if (amountRaw !== undefined) {
+        amount = Number(amountRaw);
+        if (!Number.isFinite(amount) || amount <= 0) {
         console.log('Amount must be a valid number greater than 0.');
         return;
+        }
     }
 
     const expenses = readExpenses();
@@ -71,8 +79,9 @@ export function update(args) {
         return;
     }
 
-    expense.description = description;
-    expense.amount = amount;
+    if (description) expense.description = description;
+    if (amountRaw !== undefined) expense.amount = amount;
+
     expense.updatedAt = new Date().toISOString();
 
     saveExpenses(expenses);
