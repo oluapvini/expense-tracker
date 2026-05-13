@@ -28,7 +28,7 @@ export function addExpenses(flags) {
 
     const expenses = readExpenses();
 
-    const maxId = expenses.reduce((max, e) => Math.max(max, e.id || 0), 0);
+    const maxId = expenses.reduce((max, expense) => Math.max(max, expense.id || 0), 0);
     const newId = maxId + 1;
 
     const newExpense = {
@@ -72,7 +72,7 @@ export function update(flags) {
     }
 
     const expenses = readExpenses();
-    const expense = expenses.find(e => e.id === id);
+    const expense = expenses.find(expense => expense.id === id);
 
     if (!expense) {
         console.log(`Expense with ID ${id} not found.`);
@@ -86,4 +86,20 @@ export function update(flags) {
 
     saveExpenses(expenses);
     console.log(`Expense ${id} updated successfully.`);
+}
+
+export function listExpenses() {
+    const expenses = readExpenses();
+
+    if (expenses.length === 0) {
+        console.log("Not expenses found");
+        return;
+    }
+
+    console.log("ID    Date       Description   Amount");
+
+  for (const expense of expenses) {
+    const date = (expense.createdAt || "").slice(0, 10);
+    console.log(`${expense.id} |  ${date} | ${expense.description} |    R$ ${expense.amount}`);
+  }
 }
