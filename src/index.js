@@ -6,7 +6,7 @@ import {
   update,
   listExpenses,
   // deleteExpense,
-  // summaryExpenses,
+  summaryExpenses,
 } from "./commands/expenses.js";
 
 const [, , command, ...rest] = process.argv;
@@ -37,8 +37,7 @@ switch (command) {
     break;
 
   case "summary":
-    // summaryExpenses(flags);
-    console.log("summary not implemented yet");
+    summaryExpenses(flags);
     break;
 
   default:
