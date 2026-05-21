@@ -1,8 +1,13 @@
 import { help } from "./utils/helps.js";
 import { parseFlags } from "./utils/args.js";
 
-import { addExpenses, update } from "./commands/expenses.js";
-// depois você vai adicionar: deleteExpense, listExpenses, summaryExpenses
+import {
+  addExpenses,
+  update,
+  listExpenses,
+  // deleteExpense,
+  // summaryExpenses,
+} from "./commands/expenses.js";
 
 const [, , command, ...rest] = process.argv;
 
@@ -23,8 +28,7 @@ switch (command) {
     break;
 
   case "list":
-    // listExpenses();
-    console.log("list not implemented yet");
+    listExpenses();
     break;
 
   case "delete":
