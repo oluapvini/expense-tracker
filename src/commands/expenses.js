@@ -104,34 +104,3 @@ export function listExpenses() {
   }
 }
 
-export function summaryExpenses(flags) {
-  const expenses = readExpenses();
-
-  if (!flags.month) {
-    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-    console.log(`Total expenses: $${total}`);
-    return;
-  }
-
-  const month = parseInt(flags.month, 10);
-
-  if (Number.isNaN(month) || month < 1 || month > 12) {
-    console.log('Usage: summary [--month <1-12>]');
-    help();
-    return;
-  }
-
-  const currentYear = new Date().getFullYear();
-
-  const filtered = expenses.filter(e => {
-    if (!e.createdAt) return false;
-    const date = new Date(e.createdAt);
-    const expenseMonth = date.getMonth() + 1; 
-    const expenseYear = date.getFullYear();
-    return expenseMonth === month && expenseYear === currentYear;
-  });
-
-  const totalMonth = filtered.reduce((sum, e) => sum + e.amount, 0);
-
-  console.log(`Total expenses for month ${month}: $${totalMonth}`);
-}
