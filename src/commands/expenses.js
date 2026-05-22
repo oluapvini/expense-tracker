@@ -135,3 +135,24 @@ export function summaryExpenses(flags) {
 
   console.log(`Total expenses for month ${month}: $${totalMonth}`);
 }
+
+export function deleteExpenses(flags) {
+    const id = parseInt(flags.id, 10);
+
+    if (isNaN(id)) {
+        console.log("Usage: delete --id <id>");
+        help();
+        return;
+    }
+
+    const expenses = readExpenses();
+
+    const existsId = expenses.some(expense => expense.id === id);
+    if (!existsId) {
+        console.log(`Expense with ID ${id} not found.`);
+        return;
+    }
+
+    saveExpenses(expenses.filter(expense => expense.id !== id));
+    console.log("Expense deleted successfully");
+}
