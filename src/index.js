@@ -5,7 +5,7 @@ import {
   addExpenses,
   update,
   listExpenses,
-  // deleteExpense,
+  deleteExpenses,
   summaryExpenses,
 } from "./commands/expenses.js";
 
@@ -32,8 +32,7 @@ switch (command) {
     break;
 
   case "delete":
-    // deleteExpense(flags);
-    console.log("delete not implemented yet");
+    deleteExpenses(flags);
     break;
 
   case "summary":
